@@ -17,7 +17,7 @@ class HomeController extends Controller
             'title' => 'About us - Online Store',
             'subtitle' => 'About us',
             'description' => 'This is an online store built with Laravel 12.',
-            'author' => 'Developed by: EAFIT Student',
+            'author' => 'Developed by: Isabela Ruiz de la Ossa',
         ]);
     }
 
@@ -26,9 +26,9 @@ class HomeController extends Controller
         return view('home.contact', [
             'title' => 'Contact - Online Store',
             'subtitle' => 'Contact',
-            'name' => 'EAFIT Student',
+            'name' => 'Isabela Ruiz de la Ossa',
             'address' => 'Medellín, Colombia',
-            'phone' => '+57 000 000 0000',
+            'phone' => '12345677',
         ]);
     }
 }

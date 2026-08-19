@@ -35,7 +35,7 @@
     <main class="container my-4 flex-grow-1">@yield('content')</main>
 
     <footer class="copyright py-4 text-center text-white">
-        <div class="container"><small>Copyright &copy; {{ date('Y') }} - EAFIT Student</small></div>
+        <div class="container"><small>Copyright &copy; {{ date('Y') }} - Isabela Ruiz de la Ossa</small></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
