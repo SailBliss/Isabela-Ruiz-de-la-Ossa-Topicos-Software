@@ -14,3 +14,7 @@ Route::post('/products/save', [ProductController::class, 'save'])->name('product
 Route::get('/products/{id}', [ProductController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('product.show');
+
+Route::get('/cart', 'App\Http\Controllers\CartController@index')->name("cart.index");
+Route::get('/cart/add/{id}', 'App\Http\Controllers\CartController@add')->name("cart.add");
+Route::get('/cart/removeAll/', 'App\Http\Controllers\CartController@removeAll')->name("cart.removeAll");
