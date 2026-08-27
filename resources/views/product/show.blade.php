@@ -8,8 +8,13 @@
         <div class="col-md-8">
             <div class="card-body">
                 <h3 class="card-title {{ $viewData['product']['price'] > 80 ? 'text-danger' : '' }}">{{ $viewData['product']['name'] }}</h3>
-                <p class="card-text">{{ $viewData['product']['description'] }}</p>
+                <p class="card-text">{{ $viewData["product"]["price"] }}</p>
                 <p class="card-text fw-bold">Price: ${{ number_format($viewData['product']['price'], 2) }}</p>
+
+                @foreach($viewData["product"]->comments as $comment)
+                    - {{ $comment->getDescription() }}<br />
+                @endforeach
+
                 <a class="btn btn-outline-secondary" href="{{ route('product.index') }}">Back to products</a>
             </div>
         </div>
