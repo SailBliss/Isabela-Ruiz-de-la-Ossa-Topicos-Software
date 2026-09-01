@@ -1,0 +1,22 @@
+Taller 01 - Gestión de cuentas
+
+Requisitos
+- PHP 8.2 o superior
+- Composer
+- Extensión PDO SQLite de PHP habilitada
+
+Configuración inicial
+1. Abra una terminal en la carpeta "taller 1".
+2. Ejecute: composer install
+3. Copie .env.example como .env.
+4. Ejecute: php artisan key:generate
+5. Cree un archivo vacío llamado database.sqlite dentro de la carpeta database.
+6. Verifique que .env tenga DB_CONNECTION=sqlite y que no defina DB_DATABASE para utilizar database/database.sqlite.
+7. Ejecute: php artisan migrate
+8. Ejecute: php artisan serve
+
+Ruta inicial
+Abra http://127.0.0.1:8000 en el navegador.
+
+Pruebas
+Ejecute: php artisan test
