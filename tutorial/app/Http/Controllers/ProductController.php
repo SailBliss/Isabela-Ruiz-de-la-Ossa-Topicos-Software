@@ -26,11 +26,14 @@ class ProductController extends Controller
         return view('product.index')->with('viewData', $viewData);
     }
 
-    public function show(string $id): View
+    public function show(string $id): View|RedirectResponse
     {
         $viewData = [];
+        $product = Product::query()->find($id);
 
-        $product = Product::findOrFail($id);
+        if ($product === null) {
+            return redirect()->route('home.index');
+        }
 
         $viewData['title'] = $product['name'].' - Online Store';
         $viewData['subtitle'] = $product['name'].' - Product information';
@@ -48,15 +51,21 @@ class ProductController extends Controller
         return view('product.create')->with('viewData', $viewData);
     }
 
-    public function save(Request $request): RedirectResponse
+    public function save(Request $request): View
     {
         $request->validate([
-            'name' => 'required',
-            'price' => 'required',
+            'name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'numeric', 'gt:0'],
         ]);
 
-        Product::create($request->only(['name', 'price']));
+        $product = Product::create($request->only(['name', 'price']));
 
-        return back();
+        $viewData = [
+            'title' => 'Product created',
+            'subtitle' => 'Product created successfully',
+            'product' => $product,
+        ];
+
+        return view('product.created')->with('viewData', $viewData);
     }
 }
