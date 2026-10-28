@@ -1,0 +1,17 @@
+{
+  "name": "randomquotes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicación Express de frases aleatorias para el Tutorial 06 de Tópicos de Software EAFIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

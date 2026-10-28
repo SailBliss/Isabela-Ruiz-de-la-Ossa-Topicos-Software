@@ -1,0 +1,27 @@
+Evidencia de despliegue — Tutorial 06
+Fecha: 2026-10-28
+Región: us-east-1
+
+Construcción ejecutada en la EC2 existente:
+- Imagen: randomquotes:1.0
+- Base: node:24-alpine
+- npm ci --omit=dev: 65 paquetes añadidos; 0 vulnerabilidades reportadas.
+- Resultado de docker build: DONE.
+
+Contenedor en ejecución:
+- Nombre: tutorial06-randomquotes
+- Estado observado: Up
+- Publicación: 0.0.0.0:80->80/tcp y :::80->80/tcp
+- Respuesta de curl http://127.0.0.1/: "Impossible is just an opinion."
+
+Comprobación desde fuera de la EC2:
+- URL comprobada: http://54.209.251.48/
+- 50 solicitudes GET / consecutivas: todas respondieron HTTP 200.
+- Las respuestas incluyeron las siete frases del tutorial.
+- Los servicios existentes del Tutorial 05 siguieron activos: Laravel en 8081 (HTTP 200), phpMyAdmin en 9081 (HTTP 200), MySQL saludable.
+
+También se validó antes del despliegue:
+- Node.js 24.7.0: 3/3 pruebas automatizadas satisfactorias.
+- Docker Desktop 4.97.0: 20 respuestas HTTP 200 locales y las siete frases.
+
+Esta evidencia registra resultados observados durante el despliegue. La IP pública puede cambiar si la instancia se detiene y se inicia de nuevo.
