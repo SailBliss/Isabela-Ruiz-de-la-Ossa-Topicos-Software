@@ -1,0 +1,14 @@
+Wed Oct 28 13:29:33 UTC 2026
+Docker version 25.0.14, build 0bab007
+Docker Compose version v2.40.3
+NAME                              IMAGE            COMMAND                  SERVICE      CREATED              STATUS                        PORTS
+isabela-ruiz-infra-mysql-1        mysql:8.4        "docker-entrypoint.s…"   mysql        About a minute ago   Up About a minute (healthy)   33060/tcp, 127.0.0.1:33061->3306/tcp
+isabela-ruiz-infra-phpmyadmin-1   phpmyadmin:5.2   "/docker-entrypoint.…"   phpmyadmin   About a minute ago   Up About a minute             0.0.0.0:9081->80/tcp, [::]:9081->80/tcp
+NAME                     IMAGE                 COMMAND                  SERVICE   CREATED              STATUS              PORTS
+isabela-ruiz-app-app-1   laravel-isabela:1.0   "docker-php-entrypoi…"   app       About a minute ago   Up About a minute   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+isabelaruiz@%	isabelaruiz
+GRANT USAGE ON *.* TO `isabelaruiz`@`%`
+GRANT ALL PRIVILEGES ON `isabelaruiz`.* TO `isabelaruiz`@`%`
+1	Prueba AWS	123
+[{"id":1,"name":"Prueba AWS","price":123,"created_at":"2026-10-28T13:26:46.000000Z","updated_at":"2026-10-28T13:26:46.000000Z"}]
+HTTP 200
