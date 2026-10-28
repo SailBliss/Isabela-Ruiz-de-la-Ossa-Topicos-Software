@@ -12,7 +12,10 @@
                     Id: {{ $key }} -
                     Name: {{ $product["name"] }} -
                     Price: {{ $product["price"] }} -
-                    <a href="{{ route('cart.add', ['id'=> $key]) }}">Add to cart</a>
+                    <form method="POST" action="{{ route('cart.add', ['id' => $key]) }}" class="d-inline">
+                        @csrf
+                        <button class="btn btn-link p-0" type="submit">Add to cart</button>
+                    </form>
                 </li>
                 @endforeach
             </ul>
@@ -31,7 +34,11 @@
                 </li>
                 @endforeach
             </ul>
-            <a href="{{ route('cart.removeAll') }}">Remove all products from cart</a>
+            <form method="POST" action="{{ route('cart.removeAll') }}">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-link p-0" type="submit">Remove all products from cart</button>
+            </form>
         </div>
     </div>
 </div>

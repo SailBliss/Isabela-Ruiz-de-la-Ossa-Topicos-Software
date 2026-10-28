@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,6 @@ Route::get('/products/{id}', [ProductController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('product.show');
 
-Route::get('/cart', 'App\Http\Controllers\CartController@index')->name("cart.index");
-Route::get('/cart/add/{id}', 'App\Http\Controllers\CartController@add')->name("cart.add");
-Route::get('/cart/removeAll/', 'App\Http\Controllers\CartController@removeAll')->name("cart.removeAll");
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/items/{id}', [CartController::class, 'add'])->whereNumber('id')->name('cart.add');
+Route::delete('/cart/items', [CartController::class, 'removeAll'])->name('cart.removeAll');

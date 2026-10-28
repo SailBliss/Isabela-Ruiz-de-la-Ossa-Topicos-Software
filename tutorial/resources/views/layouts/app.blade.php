@@ -21,6 +21,7 @@
                     <a class="nav-link {{ request()->routeIs('home.contact') ? 'active' : '' }}" href="{{ route('home.contact') }}">Contact</a>
                     <a class="nav-link {{ request()->routeIs('product.index', 'product.show') ? 'active' : '' }}" href="{{ route('product.index') }}">Products</a>
                     <a class="nav-link {{ request()->routeIs('product.create') ? 'active' : '' }}" href="{{ route('product.create') }}">Create Products</a>
+                    <a class="nav-link {{ request()->routeIs('cart.index') ? 'active' : '' }}" href="{{ route('cart.index') }}">Cart</a>
                 </div>
             </div>
         </div>

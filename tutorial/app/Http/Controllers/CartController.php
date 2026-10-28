@@ -8,26 +8,20 @@ use Illuminate\View\View;
 
 class CartController extends Controller
 {
+    private const PRODUCTS = [
+        121 => ['name' => 'Tv samsung', 'price' => '1000'],
+        11 => ['name' => 'Iphone', 'price' => '2000'],
+    ];
+
     public function index(Request $request): View
     {
-        $products = []; //this simulates the database
-        $products[121] = ['name' => 'Tv samsung', 'price' => '1000'];
-        $products[11] = ['name' => 'Iphone', 'price' => '2000'];
-
-        $cartProducts = [];
-        $cartProductData = $request->session()->get('cart_product_data'); //we get the products stored in session
-        if ($cartProductData) {
-            foreach (array_keys($cartProductData) as $key) {
-                if (isset($products[$key])) {
-                    $cartProducts[$key] = $products[$key];
-                }
-            }
-        }
+        $cartProductData = $request->session()->get('cart_product_data', []);
+        $cartProducts = array_intersect_key(self::PRODUCTS, array_flip($cartProductData));
 
         $viewData = [];
         $viewData['title'] = 'Cart - Online Store';
         $viewData['subtitle'] = 'Shopping Cart';
-        $viewData['products'] = $products;
+        $viewData['products'] = self::PRODUCTS;
         $viewData['cartProducts'] = $cartProducts;
 
         return view('cart.index')->with('viewData', $viewData);
@@ -35,8 +29,10 @@ class CartController extends Controller
 
     public function add(string $id, Request $request): RedirectResponse
     {
-        $cartProductData = $request->session()->get('cart_product_data');
-        $cartProductData[$id] = $id;
+        abort_unless(ctype_digit($id) && isset(self::PRODUCTS[(int) $id]), 404);
+
+        $cartProductData = $request->session()->get('cart_product_data', []);
+        $cartProductData[(int) $id] = (int) $id;
         $request->session()->put('cart_product_data', $cartProductData);
 
         return back();
