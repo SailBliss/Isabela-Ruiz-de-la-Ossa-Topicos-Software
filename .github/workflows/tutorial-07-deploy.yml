@@ -1,0 +1,75 @@
+name: Tutorial 07 - build and deploy Random Quotes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Tutoriales/Tutorial-07/**"
+      - ".github/workflows/tutorial-07-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: tutorial-07-ecs-production
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: randomquotes
+  ECS_CLUSTER: randomquotes-cluster
+  ECS_SERVICE: randomquotes-service
+
+jobs:
+  test-build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Tutoriales/Tutorial-07/package-lock.json
+
+      - name: Install dependencies and run tests
+        working-directory: Tutoriales/Tutorial-07
+        run: |
+          npm ci
+          npm test
+
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        working-directory: Tutoriales/Tutorial-07
+        run: |
+          docker build --pull \
+            --tag "$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" \
+            --tag "$REGISTRY/$ECR_REPOSITORY:latest" .
+          docker push "$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+
+      - name: Deploy updated image to Amazon ECS
+        run: |
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --force-new-deployment
+          aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE"

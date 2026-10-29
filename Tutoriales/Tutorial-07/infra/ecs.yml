@@ -1,0 +1,171 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Four-task Random Quotes service behind a public Application Load Balancer.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC containing the selected public subnets.
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet::Id
+    Description: First public subnet in an Availability Zone.
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet::Id
+    Description: Second public subnet in a different Availability Zone.
+  EcrImageUri:
+    Type: String
+    Description: Full ECR image URI, including the latest tag, pushed before creating this stack.
+    AllowedPattern: "^[0-9]{12}\\.dkr\\.ecr\\.[a-z0-9-]+\\.amazonaws\\.com\\/.+:latest$"
+  EcsExecutionRoleArn:
+    Type: String
+    Description: Existing task execution role ARN trusted by ecs-tasks.amazonaws.com with ECR pull and CloudWatch Logs permissions (AWS Academy LabRole if allowed).
+  DesiredCount:
+    Type: Number
+    Default: 4
+    MinValue: 4
+    MaxValue: 4
+    Description: Four tasks as specified by the tutorial.
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: randomquotes-cluster
+
+  ApplicationLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: randomquotes-alb-sg
+      GroupDescription: Public HTTP access to the Random Quotes ALB.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  TaskSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: randomquotes-task-sg
+      GroupDescription: Allow HTTP only from the Random Quotes ALB.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !GetAtt ApplicationLoadBalancerSecurityGroup.GroupId
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: randomquotes-alb
+      Scheme: internet-facing
+      Type: application
+      IpAddressType: ipv4
+      Subnets: [!Ref PublicSubnetA, !Ref PublicSubnetB]
+      SecurityGroups: [!GetAtt ApplicationLoadBalancerSecurityGroup.GroupId]
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: randomquotes-targets
+      VpcId: !Ref VpcId
+      Protocol: HTTP
+      Port: 80
+      TargetType: ip
+      HealthCheckEnabled: true
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: /
+      HealthCheckIntervalSeconds: 30
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Matcher:
+        HttpCode: "200"
+
+  HttpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+  ApplicationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/randomquotes
+      RetentionInDays: 7
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: randomquotes-task
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      ExecutionRoleArn: !Ref EcsExecutionRoleArn
+      ContainerDefinitions:
+        - Name: randomquotes
+          Image: !Ref EcrImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: tcp
+          Environment:
+            - Name: APP_VERSION
+              Value: "1.0.0"
+          HealthCheck:
+            Command: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 10
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref ApplicationLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: HttpListener
+    Properties:
+      ServiceName: randomquotes-service
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref TaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 50
+        MaximumPercent: 200
+      HealthCheckGracePeriodSeconds: 60
+      LoadBalancers:
+        - ContainerName: randomquotes
+          ContainerPort: 80
+          TargetGroupArn: !Ref TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: [!Ref PublicSubnetA, !Ref PublicSubnetB]
+          SecurityGroups: [!GetAtt TaskSecurityGroup.GroupId]
+
+Outputs:
+  ApplicationUrl:
+    Description: Public endpoint to test the application and the load balancer.
+    Value: !Sub "http://${LoadBalancer.DNSName}"
+  ClusterName:
+    Value: !Ref Cluster
+  ServiceName:
+    Value: !GetAtt Service.Name
+  TargetGroupArn:
+    Value: !Ref TargetGroup

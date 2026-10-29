@@ -1,0 +1,17 @@
+{
+  "name": "randomquotes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Express random quotes service for EAFIT Software Topics Tutorial 07",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

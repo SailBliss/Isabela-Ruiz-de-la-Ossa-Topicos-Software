@@ -1,0 +1,11 @@
+Tutorial 07 — evidencia de validación local
+Fecha: 2026-10-28
+
+Node local: npm ci completado.
+Pruebas: npm test — 2 pasaron, 0 fallaron.
+Docker: build de tutorial07-randomquotes:local completado con node:22-alpine.
+Contenedor local: 20 de 20 solicitudes GET / respondieron HTTP 200 y devolvieron hostname y versión.
+Health endpoint: GET /health devolvió {"status":"ok"}.
+YAML: parseados infra/ecr.yml, infra/ecs.yml y .github/workflows/tutorial-07-deploy.yml.
+
+No hay evidencia de despliegue AWS. No se crearon recursos AWS; por tanto, ECS, las cuatro tareas, el balanceador, el reemplazo de una tarea y GitHub Actions no se han probado en una cuenta AWS.
