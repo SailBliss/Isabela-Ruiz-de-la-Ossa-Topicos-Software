@@ -81,12 +81,16 @@ Resources:
       TargetType: ip
       HealthCheckEnabled: true
       HealthCheckProtocol: HTTP
-      HealthCheckPath: /
-      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /health
+      HealthCheckIntervalSeconds: 10
+      HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 2
-      UnhealthyThresholdCount: 3
+      UnhealthyThresholdCount: 5
       Matcher:
         HttpCode: "200"
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: "15"
 
   HttpListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -144,7 +148,7 @@ Resources:
       DeploymentConfiguration:
         MinimumHealthyPercent: 50
         MaximumPercent: 200
-      HealthCheckGracePeriodSeconds: 180
+      HealthCheckGracePeriodSeconds: 300
       LoadBalancers:
         - ContainerName: randomquotes
           ContainerPort: 80

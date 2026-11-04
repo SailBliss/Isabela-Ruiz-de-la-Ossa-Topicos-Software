@@ -1,6 +1,6 @@
 # Tutorial 07 — Random Quotes en ECS/Fargate
 
-Microservicio Express con Docker, publicado en Amazon ECR y ejecutado como cuatro tareas Fargate detrás de un Application Load Balancer (ALB). El endpoint `/` devuelve una frase y el hostname del contenedor; `/health` está disponible para comprobar el proceso. La definición ECS especifica explícitamente `node index.js`, sin depender del `CMD` guardado en los metadatos de la imagen. El target group y ECS usan el health check HTTP del enunciado en `/`. ECS espera 180 segundos al iniciar una tarea antes de actuar sobre un resultado de salud negativo.
+Microservicio Express con Docker, publicado en Amazon ECR y ejecutado como cuatro tareas Fargate detrás de un Application Load Balancer (ALB). El endpoint `/` devuelve una frase y el hostname del contenedor; `/health` devuelve HTTP 200 para el health check. La definición ECS especifica explícitamente `node index.js`, sin depender del `CMD` guardado en los metadatos de la imagen. El target group comprueba `/health` cada 10 segundos y ECS espera 300 segundos al iniciar una tarea antes de actuar sobre un resultado de salud negativo.
 
 ## Requisitos
 
@@ -96,4 +96,4 @@ Cuando termine la evidencia, elimine primero el servicio/stack `tutorial-07-ecs`
 
 ## Validación local registrada
 
-La auditoría local validó las pruebas Node y el build/arranque de Docker. El resumen reproducible está en `evidencias/validacion-local.txt`. Tras el primer intento ECS, se quitó el health check interno del contenedor, se amplió a 180 segundos la gracia de salud del servicio y ahora ECS fija explícitamente `node index.js` como comando. La creación de recursos AWS, el ALB, las cuatro tareas, el failover y GitHub Actions **siguen sin verificar** hasta que se ejecute la actualización de la pila existente en la cuenta propia.
+La auditoría local validó las pruebas Node y el build/arranque de Docker. El resumen reproducible está en `evidencias/validacion-local.txt`. Los primeros intentos ECS terminaron en `ROLLBACK_COMPLETE` por servicio no estabilizado. La imagen responde HTTP 200 localmente y las tareas registraron que Node inició. El target group ahora comprueba `/health` cada 10 segundos, usa una gracia ECS de 300 segundos y la Task Definition fija explícitamente `node index.js`. Para reintentar, elimina el registro de pila fallida `tutorial-07-ecs` y despliega la plantilla actualizada con los mismos parámetros; no recrees ECR. El despliegue AWS aún no está verificado.

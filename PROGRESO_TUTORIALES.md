@@ -10,7 +10,7 @@ Estados basados en código inspeccionado y verificaciones realmente ejecutadas. 
 | 04 | Verificado | API REST versionada, validación, recursos, paginación y autenticación; suite satisfactoria (16 pruebas, 59 aserciones). |
 | 05 | Verificado | Docker en EC2, Laravel + MySQL, migraciones y persistencia tras reinicio sin borrar volúmenes. Evidencias en `tutorial/evidencias/tutorial-05/`. No se verificó acceso HTTP público. |
 | 06 | Verificado | Node.js 24/Express: 3/3 pruebas; build y ejecución Docker local; imagen construida en la EC2 existente; contenedor activo en TCP 80; 50 comprobaciones HTTP públicas, todas 200 y con las siete frases. Evidencia en `Tutoriales/Tutorial-06/evidencias/despliegue-ec2.txt`. |
-| 07 | Implementado, sin verificar | App Express/Docker (Node 22), 2/2 pruebas, build Docker y 20/20 respuestas locales HTTP 200. Tras el primer intento ECS con tareas reemplazadas y ALB 503, la Task Definition fija `node index.js`, se retiró el health check interno duplicado y se amplió a 180 s la gracia del servicio. Actualización de la pila existente y validación AWS pendientes. |
+| 07 | Implementado, sin verificar | App Express/Docker (Node 22), 2/2 pruebas, build Docker y 20/20 respuestas locales HTTP 200. Primeros intentos ECS terminaron en `ROLLBACK_COMPLETE` por servicio no estabilizado. Imagen y reglas de SG verificadas; actualizado ALB health check a `/health` cada 10 s, gracia ECS 300 s y comando explícito `node index.js`. Falta reintentar pila y verificar ECS/ALB. |
 
 ## Commits separados
 
