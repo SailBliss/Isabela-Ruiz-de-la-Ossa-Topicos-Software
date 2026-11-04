@@ -1,6 +1,6 @@
 # Tutorial 07 — Random Quotes en ECS/Fargate
 
-Microservicio Express con Docker, publicado en Amazon ECR y ejecutado como cuatro tareas Fargate detrás de un Application Load Balancer (ALB). El endpoint `/` devuelve una frase y el hostname del contenedor; `/health` está disponible para comprobar el proceso. El target group y ECS usan el health check HTTP del enunciado en `/`. ECS espera 180 segundos al iniciar una tarea antes de actuar sobre un resultado de salud negativo.
+Microservicio Express con Docker, publicado en Amazon ECR y ejecutado como cuatro tareas Fargate detrás de un Application Load Balancer (ALB). El endpoint `/` devuelve una frase y el hostname del contenedor; `/health` está disponible para comprobar el proceso. La definición ECS especifica explícitamente `node index.js`, sin depender del `CMD` guardado en los metadatos de la imagen. El target group y ECS usan el health check HTTP del enunciado en `/`. ECS espera 180 segundos al iniciar una tarea antes de actuar sobre un resultado de salud negativo.
 
 ## Requisitos
 
@@ -96,4 +96,4 @@ Cuando termine la evidencia, elimine primero el servicio/stack `tutorial-07-ecs`
 
 ## Validación local registrada
 
-La auditoría local validó las pruebas Node y el build/arranque de Docker. El resumen reproducible está en `evidencias/validacion-local.txt`. Tras el primer intento ECS, se quitó el health check interno del contenedor (que podía causar reemplazos independientes) y se amplió a 180 segundos la gracia de salud del servicio. La creación de recursos AWS, el ALB, las cuatro tareas, el failover y GitHub Actions **siguen sin verificar** hasta que se ejecute el nuevo despliegue en la cuenta propia.
+La auditoría local validó las pruebas Node y el build/arranque de Docker. El resumen reproducible está en `evidencias/validacion-local.txt`. Tras el primer intento ECS, se quitó el health check interno del contenedor, se amplió a 180 segundos la gracia de salud del servicio y ahora ECS fija explícitamente `node index.js` como comando. La creación de recursos AWS, el ALB, las cuatro tareas, el failover y GitHub Actions **siguen sin verificar** hasta que se ejecute la actualización de la pila existente en la cuenta propia.

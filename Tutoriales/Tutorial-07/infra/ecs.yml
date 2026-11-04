@@ -117,6 +117,8 @@ Resources:
         - Name: randomquotes
           Image: !Ref EcrImageUri
           Essential: true
+          # Set the process explicitly so ECS does not rely on image CMD metadata.
+          Command: ["node", "index.js"]
           PortMappings:
             - ContainerPort: 80
               Protocol: tcp
