@@ -47,7 +47,7 @@ La configuración del servicio `tutorial-07-randomquotes` es:
 - Región: Virginia (US East).
 - Plan: Free, mostrado por Render como USD 0/mes.
 - Health Check Path: `/health`.
-- Auto-Deploy: habilitado para cambios en la rama conectada.
+- Auto-Deploy: pendiente. El servicio se creó desde la pestaña **Public Git Repository**, que no activa Auto-Deploy; por ahora los cambios se publican manualmente desde Render.
 
 Para repetir el despliegue desde Render:
 
@@ -56,7 +56,7 @@ Para repetir el despliegue desde Render:
 3. Seleccione región **Virginia (US East)** y el plan **Free**.
 4. Cree el servicio y espere el estado **Deploy succeeded | Live**.
 5. En **Settings → Health Checks**, establezca `/health`.
-6. Mantenga habilitado **Auto-Deploy** para que un cambio nuevo en el directorio del tutorial active otro build.
+6. La fuente actual es **Public Git Repository** y no dispone de Auto-Deploy. Para desplegar una actualización, use **Manual Deploy**; para automatizarlo, conecte el proveedor GitHub en Render y autorice el acceso al repositorio.
 
 ### URL y validación del despliegue
 
@@ -66,7 +66,7 @@ Para repetir el despliegue desde Render:
 - `/health` devolvió HTTP 200 y `{"status":"ok"}`.
 - Se ejecutaron 12 solicitudes seguidas a `/`; todas devolvieron HTTP 200 y el mismo hostname, como corresponde a una sola instancia.
 - `npm test`: 2 pruebas pasaron, 0 fallaron.
-- El historial de Render mostró el despliegue inicial **Deploy succeeded | Live** y otro despliegue exitoso al guardar `/health` como health check.
+- El historial de Render mostró el despliegue inicial **Deploy succeeded | Live** y otro despliegue exitoso al guardar `/health` como health check. Ese segundo despliegue fue por cambio de configuración, no por un push a GitHub.
 
 Los resultados reproducibles y el alcance de esta validación están en [`evidencias/despliegue-render.md`](evidencias/despliegue-render.md). Las capturas de pantalla de entrega se añadirán a `evidencias/` cuando estén disponibles.
 
@@ -79,7 +79,7 @@ Los resultados reproducibles y el alcance de esta validación están en [`eviden
 | Balancear tráfico con un ALB | La URL pública recibe tráfico a través de Render, pero no se configura ni inspecciona un ALB propio ni se puede comparar el reparto entre cuatro tareas. |
 | Comprobar salud | La app expone `/health` y Render tiene esa ruta configurada como health check. |
 | Detener una tarea y observar su reemplazo por ECS | El plan gratuito no da acceso SSH ni permite administrar o detener directamente una tarea/instancia. Esta prueba específica de ECS no se puede hacer aquí. |
-| Automatizar el despliegue | GitHub Actions ejecuta las pruebas; Auto-Deploy de Render construye y publica los cambios de `main`. No se usan credenciales AWS ni OIDC para esta ruta. |
+| Automatizar el despliegue | El workflow `tutorial-07-ci.yml` está preparado para ejecutar las pruebas en GitHub Actions. La conexión actual no auto-publica pushes; se requiere enlazar GitHub con Render o usar un deploy hook. No se usan credenciales AWS ni OIDC para esta ruta. |
 
 ### Conceptos para explicar en la entrega
 
@@ -99,7 +99,7 @@ Guardar capturas reales en `evidencias/`:
 2. Página pública `/` mostrando una frase y el hostname.
 3. Página `/health` mostrando `{"status":"ok"}`.
 4. Settings de Render con Docker, plan Free, carpeta raíz y health check `/health`.
-5. Ejecución exitosa de GitHub Actions y Auto-Deploy de Render después de un cambio en `main`.
+5. Ejecución exitosa de GitHub Actions. Para evidenciar publicación automática después de un cambio en `main`, primero hay que conectar el proveedor GitHub a Render.
 
 La captura no debe afirmar que se observaron cuatro hostnames ni cuatro tareas: Render Free no permite esa verificación.
 
