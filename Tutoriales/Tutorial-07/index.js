@@ -7,7 +7,7 @@ const version = process.env.APP_VERSION || '1.0.0';
 const phrases = [
   'Get ready to be inspired…',
   'See rejection as redirection.',
-  'There is beauty in simplicity.',
+  'There is beauty in simplicity, and in shipping.',
   "You can't be late until you show up.",
   "Maybe life is testing you. Don't give up.",
   'Impossible is just an opinion.',
