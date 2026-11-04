@@ -123,12 +123,6 @@ Resources:
           Environment:
             - Name: APP_VERSION
               Value: "1.0.0"
-          HealthCheck:
-            Command: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
-            Interval: 30
-            Timeout: 5
-            Retries: 3
-            StartPeriod: 10
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -148,7 +142,7 @@ Resources:
       DeploymentConfiguration:
         MinimumHealthyPercent: 50
         MaximumPercent: 200
-      HealthCheckGracePeriodSeconds: 60
+      HealthCheckGracePeriodSeconds: 180
       LoadBalancers:
         - ContainerName: randomquotes
           ContainerPort: 80
