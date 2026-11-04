@@ -1,0 +1,38 @@
+name: Tutorial 07 - test Random Quotes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Tutoriales/Tutorial-07/**"
+      - ".github/workflows/tutorial-07-ci.yml"
+  pull_request:
+    paths:
+      - "Tutoriales/Tutorial-07/**"
+      - ".github/workflows/tutorial-07-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Tutoriales/Tutorial-07
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Tutoriales/Tutorial-07/package-lock.json
+
+      - name: Install dependencies and run tests
+        run: |
+          npm ci
+          npm test
